@@ -13,12 +13,16 @@ AppDataSource.initialize()
         const userService = new UserService(userRepository);
         const userController = new UserController(userService);
 
-        router.post("/users", (req, res) =>
+        router.post("/create", (req, res) =>
             userController.createUser(req, res)
         );
-        router.get("/users/:email", (req, res) =>
-            userController.getUserByEmail(req, res)
-        );
+        // router.get("/users/:email", (req, res) =>
+        //     userController.getUserByEmail(req, res)
+        // );
+
+        router.get("/users", (req, res) => {
+            userController.allUsers(req, res);
+        });
 
         console.log("User routes initialized");
     })

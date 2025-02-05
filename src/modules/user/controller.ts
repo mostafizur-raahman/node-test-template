@@ -15,4 +15,9 @@ export class UserController {
         const user = await this.userService.getUserByEmail(email);
         res.status(200).json(user);
     }
+
+    async allUsers(req: Request, res: Response) {
+        const users = await this.userService.findAllUsers();
+        res.status(200).json(users);
+    }
 }
