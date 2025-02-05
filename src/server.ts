@@ -4,7 +4,7 @@ import { AppDataSource } from "./config/data-source"; // Ensure correct path
 import { envConfig } from "./constant/env.constant";
 
 const PORT = envConfig.SERVER_PORT;
-console.log("env ", envConfig);
+
 AppDataSource.initialize()
     .then(() => {
         console.log("Database connected");

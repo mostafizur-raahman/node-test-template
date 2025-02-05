@@ -1,18 +1,18 @@
-import { Client } from "pg"; // Only needed for PostgreSQL
+import { Client } from "pg";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import { envConfig } from "../constant/env.constant";
 import { User } from "../modules/user/entities/User";
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = envConfig;
 
-// Function to create the database if it doesn't exist (PostgreSQL only)
 const createDatabaseIfNotExists = async () => {
     const client = new Client({
         host: DB_HOST,
         port: Number(DB_PORT) || 5432,
-        user: DB_USER,
+        user: DB_USERNAME,
         password: DB_PASSWORD,
-        database: "postgres", // Connect to default DB first
+        database: "postgres",
     });
 
     try {
@@ -35,16 +35,28 @@ export const AppDataSource = new DataSource({
     type: "postgres",
     host: DB_HOST,
     port: Number(DB_PORT) || 5432,
-    username: DB_USER,
-    password: String(DB_PASSWORD || "root"),
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
     database: DB_NAME,
     entities: [User],
-    synchronize: true, // Creates tables automatically, use migrations in production
+    synchronize: false, // ⚠️ Use migrations instead
     logging: false,
 });
 
-createDatabaseIfNotExists().then(() => {
-    AppDataSource.initialize()
-        .then(() => console.log("Database connected successfully"))
-        .catch((error) => console.error("Database connection failed:", error));
-});
+const initializeDatabase = async () => {
+    await createDatabaseIfNotExists();
+
+    if (!AppDataSource.isInitialized) {
+        AppDataSource.initialize()
+            .then(() => console.log("Database connected successfully"))
+            .catch((error) =>
+                console.error("Database connection failed:", error)
+            );
+    } else {
+        console.log(
+            "Database connection already exists, skipping initialization."
+        );
+    }
+};
+
+initializeDatabase();
